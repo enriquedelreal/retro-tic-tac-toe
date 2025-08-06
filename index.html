@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Game Arcade</title>
+    <link rel="stylesheet" href="assets/css/style.css?v=14">
+    <link rel="stylesheet" href="auth-styles.css?v=1">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="sidebar-toggle" id="sidebarToggle">◀</div>
+    <div class="fullscreen-toggle" id="fullscreenToggle">⛶</div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">🎮 ARCADE</h2>
+            </div>
+            <nav class="game-nav">
+                <button class="game-nav-item active" data-game="tictactoe">
+                    <span class="game-icon">⭕</span>
+                    <span class="game-name">TIC TAC TOE</span>
+                </button>
+                <button class="game-nav-item" data-game="checkers">
+                    <span class="game-icon">🔴</span>
+                    <span class="game-name">CHECKERS</span>
+                </button>
+                <button class="game-nav-item" data-game="2048">
+                    <span class="game-icon">🔢</span>
+                    <span class="game-name">2048</span>
+                </button>
+                <button class="game-nav-item" data-game="snake">
+                    <span class="game-icon">🐍</span>
+                    <span class="game-name">SNAKE</span>
+                </button>
+                <button class="game-nav-item" data-game="tetris">
+                    <span class="game-icon">🧩</span>
+                    <span class="game-name">TETRIS</span>
+                </button>
+                <button class="game-nav-item" data-game="battleship">
+                    <span class="game-icon">⚓</span>
+                    <span class="game-name">BATTLESHIP</span>
+                </button>
+                <button class="game-nav-item" data-game="spaceInvaders">
+                    <span class="game-icon">👾</span>
+                    <span class="game-name">SPACE INVADERS</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Tic Tac Toe Game -->
+            <div class="game-container active" id="tictactoe-game">
+                <header class="game-header">
+                    <h1 class="game-title">🎮 TIC TAC TOE</h1>
+                    <div class="subtitle">RETRO EDITION</div>
+                </header>
+
+                <div class="game-info">
+                    <div class="player-turn">
+                        <span class="turn-label">CURRENT PLAYER:</span>
+                        <span class="current-player" id="currentPlayer">X</span>
+                    </div>
+                    <div class="move-counter">
+                        <span class="move-label">MOVE:</span>
+                        <span class="move-number" id="moveCounter">0</span>
+                    </div>
+                </div>
+
+                <div class="game-board" id="gameBoard">
+                    <div class="cell" data-index="0"></div>
+                    <div class="cell" data-index="1"></div>
+                    <div class="cell" data-index="2"></div>
+                    <div class="cell" data-index="3"></div>
+                    <div class="cell" data-index="4"></div>
+                    <div class="cell" data-index="5"></div>
+                    <div class="cell" data-index="6"></div>
+                    <div class="cell" data-index="7"></div>
+                    <div class="cell" data-index="8"></div>
+                </div>
+
+                <div class="scoreboard">
+                    <div class="score-item">
+                        <span class="player-label">PLAYER X</span>
+                        <span class="score" id="scoreX">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="player-label">PLAYER O</span>
+                        <span class="score" id="scoreO">0</span>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="retro-button" id="resetGame">RESET GAME</button>
+                    <button class="retro-button" id="resetScore">RESET SCORE</button>
+                    <button class="retro-button" id="toggleMode">VS AI</button>
+                </div>
+
+                <div class="ai-controls" id="aiControls" style="display: none;">
+                    <label for="aiDifficulty" class="difficulty-label">AI DIFFICULTY:</label>
+                    <select id="aiDifficulty" class="retro-select">
+                        <option value="easy">EASY</option>
+                        <option value="medium" selected>MEDIUM</option>
+                        <option value="hard">HARD</option>
+                    </select>
+                </div>
+
+                <div class="game-status" id="gameStatus"></div>
+                
+                <div class="help-section">
+                    <details class="help-details">
+                        <summary class="help-summary">🎮 CONTROLS & SHORTCUTS</summary>
+                        <div class="help-content">
+                            <p><strong>Mouse:</strong> Click cells to place X or O</p>
+                            <p><strong>Keyboard:</strong></p>
+                            <ul>
+                                <li><strong>1-9:</strong> Place move in cell (1-9)</li>
+                                <li><strong>R:</strong> Reset game</li>
+                                <li><strong>S:</strong> Reset score</li>
+                                <li><strong>M:</strong> Toggle AI mode</li>
+                                <li><strong>F:</strong> Fullscreen</li>
+                                <li><strong>H:</strong> Show statistics</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Checkers Game -->
+            <div class="game-container" id="checkers-game">
+                <header class="game-header">
+                    <h1 class="game-title">🎮 CHECKERS</h1>
+                    <div class="subtitle">RETRO EDITION</div>
+                </header>
+
+                <div class="game-info">
+                    <div class="player-turn">
+                        <span class="turn-label">CURRENT PLAYER:</span>
+                        <span class="current-player" id="checkersCurrentPlayer">🔴</span>
+                    </div>
+                    <div class="move-counter">
+                        <span class="move-label">MOVE:</span>
+                        <span class="move-number" id="checkersMoveCounter">0</span>
+                    </div>
+                </div>
+
+                <div class="checkers-board" id="checkersBoard">
+                    <!-- Checkers board will be generated by JavaScript -->
+                </div>
+
+                <div class="scoreboard">
+                    <div class="score-item">
+                        <span class="player-label">RED PLAYER</span>
+                        <span class="score" id="scoreRed">12</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="player-label">BLACK PLAYER</span>
+                        <span class="score" id="scoreBlack">12</span>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="retro-button" id="checkersResetGame">RESET GAME</button>
+                    <button class="retro-button" id="checkersResetScore">RESET SCORE</button>
+                    <button class="retro-button" id="checkersToggleMode">VS AI</button>
+                </div>
+
+                <div class="ai-controls" id="checkersAiControls" style="display: none;">
+                    <label for="checkersAiDifficulty" class="difficulty-label">AI DIFFICULTY:</label>
+                    <select id="checkersAiDifficulty" class="retro-select">
+                        <option value="easy">EASY</option>
+                        <option value="medium" selected>MEDIUM</option>
+                        <option value="hard">HARD</option>
+                    </select>
+                </div>
+
+                <div class="game-status" id="checkersGameStatus"></div>
+                
+                <div class="help-section">
+                    <details class="help-details">
+                        <summary class="help-summary">🎮 CONTROLS & SHORTCUTS</summary>
+                        <div class="help-content">
+                            <p><strong>Mouse:</strong> Click piece to select, click destination to move</p>
+                            <p><strong>Keyboard:</strong></p>
+                            <ul>
+                                <li><strong>Arrow Keys:</strong> Navigate board</li>
+                                <li><strong>Space/Enter:</strong> Select piece or make move</li>
+                                <li><strong>R:</strong> Reset game</li>
+                                <li><strong>S:</strong> Reset score</li>
+                                <li><strong>M:</strong> Toggle AI mode</li>
+                                <li><strong>F:</strong> Fullscreen</li>
+                                <li><strong>H:</strong> Show statistics</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- 2048 Game -->
+            <div class="game-container" id="2048-game">
+                <header class="game-header">
+                    <h1 class="game-title">🎮 2048</h1>
+                    <div class="subtitle">RETRO EDITION</div>
+                </header>
+
+                <div class="game-info">
+                    <div class="player-turn">
+                        <span class="turn-label">SCORE:</span>
+                        <span class="current-player" id="2048Score">0</span>
+                    </div>
+                    <div class="move-counter">
+                        <span class="move-label">MOVES:</span>
+                        <span class="move-number" id="2048Moves">0</span>
+                    </div>
+                </div>
+
+                <div class="game-board board-2048" id="2048Board">
+                    <!-- 2048 board will be generated by JavaScript -->
+                </div>
+
+                <div class="scoreboard">
+                    <div class="score-item">
+                        <span class="player-label">BEST SCORE</span>
+                        <span class="score" id="2048BestScore">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="player-label">HIGHEST TILE</span>
+                        <span class="score" id="2048HighestTile">2</span>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="retro-button" id="2048ResetGame">NEW GAME</button>
+                    <button class="retro-button" id="2048ResetScore">RESET SCORE</button>
+                    <button class="retro-button" id="2048Undo">UNDO</button>
+                </div>
+
+                <div class="game-status" id="2048GameStatus"></div>
+                
+                <div class="help-section">
+                    <details class="help-details">
+                        <summary class="help-summary">🎮 CONTROLS & SHORTCUTS</summary>
+                        <div class="help-content">
+                            <p><strong>Mouse:</strong> Click and drag to swipe tiles</p>
+                            <p><strong>Keyboard:</strong></p>
+                            <ul>
+                                <li><strong>Arrow Keys:</strong> Move tiles</li>
+                                <li><strong>WASD:</strong> Alternative movement</li>
+                                <li><strong>R:</strong> New game</li>
+                                <li><strong>S:</strong> Reset score</li>
+                                <li><strong>Z:</strong> Undo move</li>
+                                <li><strong>F:</strong> Fullscreen</li>
+                                <li><strong>H:</strong> Show statistics</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Snake Game -->
+            <div class="game-container" id="snake-game">
+                <header class="game-header">
+                    <h1 class="game-title">🎮 SNAKE</h1>
+                    <div class="subtitle">RETRO EDITION</div>
+                </header>
+
+                <div class="game-info">
+                    <div class="player-turn">
+                        <span class="turn-label">SCORE:</span>
+                        <span class="current-player" id="snakeScore">0</span>
+                    </div>
+                    <div class="move-counter">
+                        <span class="move-label">LENGTH:</span>
+                        <span class="move-number" id="snakeLength">3</span>
+                    </div>
+                </div>
+
+                <div class="game-board board-snake" id="snakeBoard">
+                    <!-- Snake board will be generated by JavaScript -->
+                </div>
+
+                <div class="scoreboard">
+                    <div class="score-item">
+                        <span class="player-label">BEST SCORE</span>
+                        <span class="score" id="snakeBestScore">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="player-label">HIGHEST LENGTH</span>
+                        <span class="score" id="snakeHighestLength">3</span>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="retro-button" id="snakeResetGame">NEW GAME</button>
+                    <button class="retro-button" id="snakeResetScore">RESET SCORE</button>
+                    <button class="retro-button" id="snakePause">PAUSE</button>
+                </div>
+
+                <div class="ai-controls" id="snakeSpeedControls">
+                    <label class="difficulty-label">SPEED:</label>
+                    <button class="retro-button speed-btn active" data-speed="medium" id="snakeSpeedMedium">MEDIUM</button>
+                    <button class="retro-button speed-btn" data-speed="slow" id="snakeSpeedSlow">SLOW</button>
+                    <button class="retro-button speed-btn" data-speed="fast" id="snakeSpeedFast">FAST</button>
+                </div>
+
+                <div class="game-status" id="snakeGameStatus"></div>
+                
+                <div class="help-section">
+                    <details class="help-details">
+                        <summary class="help-summary">🎮 CONTROLS & SHORTCUTS</summary>
+                        <div class="help-content">
+                            <p><strong>Mouse:</strong> Click to focus game board</p>
+                            <p><strong>Keyboard:</strong></p>
+                            <ul>
+                                <li><strong>Arrow Keys:</strong> Move snake</li>
+                                <li><strong>WASD:</strong> Alternative movement</li>
+                                <li><strong>Space:</strong> Pause/Resume</li>
+                                <li><strong>R:</strong> New game</li>
+                                <li><strong>S:</strong> Reset score</li>
+                                <li><strong>P:</strong> Pause game</li>
+                                <li><strong>F:</strong> Fullscreen</li>
+                                <li><strong>Speed:</strong> Choose SLOW/MEDIUM/FAST</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Tetris Game -->
+            <div class="game-container" id="tetris-game">
+                <header class="game-header">
+                    <h1 class="game-title">🎮 TETRIS</h1>
+                    <div class="subtitle">RETRO EDITION</div>
+                </header>
+
+                <div class="game-info">
+                    <div class="player-turn">
+                        <span class="turn-label">SCORE:</span>
+                        <span class="current-player" id="tetrisScore">0</span>
+                    </div>
+                    <div class="move-counter">
+                        <span class="move-label">LEVEL:</span>
+                        <span class="move-number" id="tetrisLevel">1</span>
+                    </div>
+                </div>
+
+                <div class="tetris-container">
+                    <div class="game-board board-tetris" id="tetrisBoard">
+                        <!-- Tetris board will be generated by JavaScript -->
+                    </div>
+                    <div class="tetris-sidebar">
+                        <div class="next-piece">
+                            <h3>NEXT</h3>
+                            <div id="tetrisNextPiece"></div>
+                        </div>
+                        <div class="tetris-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">LINES:</span>
+                                <span class="stat-value" id="tetrisLines">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">PIECES:</span>
+                                <span class="stat-value" id="tetrisPieces">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scoreboard">
+                    <div class="score-item">
+                        <span class="player-label">BEST SCORE</span>
+                        <span class="score" id="tetrisBestScore">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="player-label">HIGHEST LEVEL</span>
+                        <span class="score" id="tetrisHighestLevel">1</span>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="retro-button" id="tetrisResetGame">NEW GAME</button>
+                    <button class="retro-button" id="tetrisResetScore">RESET SCORE</button>
+                    <button class="retro-button" id="tetrisPause">PAUSE</button>
+                </div>
+
+                <div class="ai-controls" id="tetrisSpeedControls">
+                    <label class="difficulty-label">SPEED:</label>
+                    <button class="retro-button speed-btn active" data-speed="medium" id="tetrisSpeedMedium">MEDIUM</button>
+                    <button class="retro-button speed-btn" data-speed="slow" id="tetrisSpeedSlow">SLOW</button>
+                    <button class="retro-button speed-btn" data-speed="fast" id="tetrisSpeedFast">FAST</button>
+                </div>
+
+                <div class="game-status" id="tetrisGameStatus"></div>
+                
+                <div class="help-section">
+                    <details class="help-details">
+                        <summary class="help-summary">🎮 CONTROLS & SHORTCUTS</summary>
+                        <div class="help-content">
+                            <p><strong>Mouse:</strong> Click to focus game board</p>
+                            <p><strong>Keyboard:</strong></p>
+                            <ul>
+                                <li><strong>Arrow Keys:</strong> Move/Rotate piece</li>
+                                <li><strong>Left/Right:</strong> Move piece</li>
+                                <li><strong>Down:</strong> Soft drop</li>
+                                <li><strong>Up:</strong> Rotate piece</li>
+                                <li><strong>Space:</strong> Pause/Resume</li>
+                                <li><strong>H:</strong> Hard drop</li>
+                                <li><strong>R:</strong> New game</li>
+                                <li><strong>P:</strong> Pause game</li>
+                                <li><strong>F:</strong> Fullscreen</li>
+                                <li><strong>Speed:</strong> Choose SLOW/MEDIUM/FAST</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Battleship Game -->
+            <div class="game-container" id="battleship-game">
+                <header class="game-header">
+                    <h1 class="game-title">🎮 BATTLESHIP</h1>
+                    <div class="subtitle">RETRO EDITION</div>
+                </header>
+
+                <div class="game-info">
+                    <div class="player-turn">
+                        <span class="turn-label">PLAYER:</span>
+                        <span class="current-player" id="battleshipPlayer">YOU</span>
+                    </div>
+                    <div class="move-counter">
+                        <span class="move-label">SHOTS:</span>
+                        <span class="move-number" id="battleshipShots">0</span>
+                    </div>
+                </div>
+
+                <div class="battleship-container">
+                    <div class="battleship-board">
+                        <h3>YOUR FLEET</h3>
+                        <div class="game-board board-battleship" id="playerBoard">
+                            <!-- Player board will be generated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="battleship-board">
+                        <h3>ENEMY WATERS</h3>
+                        <div class="game-board board-battleship" id="computerBoard">
+                            <!-- Enemy board will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scoreboard">
+                    <div class="score-item">
+                        <span class="player-label">YOUR SHIPS</span>
+                        <span class="score" id="battleshipPlayerShips">5</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="player-label">ENEMY SHIPS</span>
+                        <span class="score" id="battleshipEnemyShips">5</span>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="retro-button" id="battleshipResetGame">NEW GAME</button>
+                    <button class="retro-button" id="battleshipStartGame">START GAME</button>
+                    <button class="retro-button" id="orientationButton">HORIZONTAL</button>
+                </div>
+
+                <div class="game-status" id="battleshipStatus"></div>
+                <div class="ship-info" id="shipInfo">Place your ships!</div>
+                
+                <div class="help-section">
+                    <details class="help-details">
+                        <summary class="help-summary">🎮 CONTROLS & SHORTCUTS</summary>
+                        <div class="help-content">
+                            <p><strong>Mouse:</strong> Click to place ships or fire shots</p>
+                            <p><strong>Keyboard:</strong></p>
+                            <ul>
+                                <li><strong>Arrow Keys:</strong> Navigate board</li>
+                                <li><strong>Space/Enter:</strong> Place ship or fire</li>
+                                <li><strong>R:</strong> Rotate ship</li>
+                                <li><strong>N:</strong> New game</li>
+                                <li><strong>A:</strong> Auto place ships</li>
+                                <li><strong>F:</strong> Fullscreen</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Space Invaders Game -->
+            <div class="game-container" id="spaceInvaders-game">
+                <header class="game-header">
+                    <h1 class="game-title">🎮 SPACE INVADERS</h1>
+                    <div class="subtitle">RETRO EDITION</div>
+                </header>
+
+                <div class="game-info">
+                    <div class="player-turn">
+                        <span class="turn-label">SCORE:</span>
+                        <span class="current-player" id="spaceInvadersScore">0</span>
+                    </div>
+                    <div class="move-counter">
+                        <span class="move-label">LEVEL:</span>
+                        <span class="move-number" id="spaceInvadersLevel">1</span>
+                    </div>
+                </div>
+
+                <div class="space-invaders-container">
+                    <canvas id="spaceInvadersCanvas" width="800" height="600"></canvas>
+                </div>
+
+                <div class="scoreboard">
+                    <div class="score-item">
+                        <span class="player-label">LIVES</span>
+                        <span class="score" id="spaceInvadersLives">3</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="player-label">BEST SCORE</span>
+                        <span class="score" id="spaceInvadersBestScore">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="player-label">HIGHEST LEVEL</span>
+                        <span class="score" id="spaceInvadersHighestLevel">1</span>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="retro-button" id="spaceInvadersResetGame">NEW GAME</button>
+                    <button class="retro-button" id="spaceInvadersResetScore">RESET SCORE</button>
+                    <button class="retro-button" id="spaceInvadersPause">PAUSE</button>
+                </div>
+
+                <div class="game-status" id="spaceInvadersGameStatus"></div>
+                
+                <div class="help-section">
+                    <details class="help-details">
+                        <summary class="help-summary">🎮 CONTROLS & SHORTCUTS</summary>
+                        <div class="help-content">
+                            <p><strong>Mouse:</strong> Click to start game</p>
+                            <p><strong>Keyboard:</strong></p>
+                            <ul>
+                                <li><strong>Arrow Keys:</strong> Move ship left/right</li>
+                                <li><strong>WASD:</strong> Alternative movement</li>
+                                <li><strong>Space:</strong> Shoot / Pause</li>
+                                <li><strong>R:</strong> New game</li>
+                                <li><strong>P:</strong> Pause game</li>
+                                <li><strong>F:</strong> Fullscreen</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js?v=1"></script>
+    <script src="stripe-integration.js?v=1"></script>
+    <script src="assets/js/game.js?v=12"></script>
+    <script src="assets/js/checkers.js?v=8"></script>
+    <script src="assets/js/2048.js?v=9"></script>
+    <script src="assets/js/snake.js?v=13"></script>
+    <script src="assets/js/tetris.js?v=12"></script>
+    <script src="assets/js/battleship.js?v=8"></script>
+    <script src="assets/js/spaceinvaders.js?v=1"></script>
+    <script src="assets/js/app.js?v=8"></script>
+    <script src="auth-ui.js?v=1"></script>
+</body>
+</html> 
