@@ -1,4 +1,5 @@
 // Retro Game Arcade - Main App Controller
+console.log('App.js loaded successfully');
 
 class RetroGameArcade {
     constructor() {
@@ -338,5 +339,17 @@ class RetroGameArcade {
     }
 }
 
-// Initialize the app when the page loads
-window.retroArcade = new RetroGameArcade(); 
+// Initialize the app when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing RetroGameArcade...');
+    window.retroArcade = new RetroGameArcade();
+});
+
+// Also initialize immediately if DOM is already loaded
+if (document.readyState === 'loading') {
+    // DOM is still loading, wait for DOMContentLoaded
+} else {
+    // DOM is already loaded, initialize immediately
+    console.log('DOM already loaded, initializing RetroGameArcade immediately...');
+    window.retroArcade = new RetroGameArcade();
+} 
