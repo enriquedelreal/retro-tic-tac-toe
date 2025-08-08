@@ -1,6 +1,16 @@
 // Retro Game Arcade - Main App Controller
 console.log('App.js loaded successfully');
 
+// Debug script loading
+console.log('Checking for game classes...');
+console.log('RetroTicTacToe available:', typeof RetroTicTacToe !== 'undefined');
+console.log('RetroCheckers available:', typeof RetroCheckers !== 'undefined');
+console.log('Retro2048 available:', typeof Retro2048 !== 'undefined');
+console.log('RetroSnake available:', typeof RetroSnake !== 'undefined');
+console.log('RetroTetris available:', typeof RetroTetris !== 'undefined');
+console.log('RetroBattleship available:', typeof RetroBattleship !== 'undefined');
+console.log('RetroSpaceInvaders available:', typeof RetroSpaceInvaders !== 'undefined');
+
 class RetroGameArcade {
     constructor() {
         console.log('RetroGameArcade constructor called');
@@ -339,17 +349,50 @@ class RetroGameArcade {
     }
 }
 
-// Initialize the app when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing RetroGameArcade...');
-    window.retroArcade = new RetroGameArcade();
-});
+// Safe initialization with retry logic
+let initAttempts = 0;
+const maxAttempts = 10;
 
-// Also initialize immediately if DOM is already loaded
+function initializeApp() {
+    initAttempts++;
+    console.log(`Initialization attempt ${initAttempts}`);
+    
+    // Check if all required classes are available
+    const requiredClasses = [
+        'RetroTicTacToe', 'RetroCheckers', 'Retro2048', 
+        'RetroSnake', 'RetroTetris', 'RetroBattleship', 'RetroSpaceInvaders'
+    ];
+    
+    const missingClasses = requiredClasses.filter(className => typeof window[className] === 'undefined');
+    
+    if (missingClasses.length > 0) {
+        console.warn('Missing classes:', missingClasses);
+        if (initAttempts < maxAttempts) {
+            console.log('Retrying in 200ms...');
+            setTimeout(initializeApp, 200);
+            return;
+        } else {
+            console.error('Max initialization attempts reached. Some games may not work.');
+        }
+    }
+    
+    try {
+        console.log('Initializing RetroGameArcade...');
+        window.retroArcade = new RetroGameArcade();
+        console.log('App initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize app:', error);
+        if (initAttempts < maxAttempts) {
+            console.log('Retrying initialization...');
+            setTimeout(initializeApp, 500);
+        }
+    }
+}
+
+// Initialize when DOM is ready
 if (document.readyState === 'loading') {
-    // DOM is still loading, wait for DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
-    // DOM is already loaded, initialize immediately
-    console.log('DOM already loaded, initializing RetroGameArcade immediately...');
-    window.retroArcade = new RetroGameArcade();
+    // DOM is already ready
+    initializeApp();
 } 

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retro Game Arcade</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=14">
-    <link rel="stylesheet" href="auth-styles.css?v=1">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="auth-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -555,17 +555,22 @@
         </div>
     </div>
 
-    <script src="auth.js?v=1"></script>
-    <script src="stripe-integration.js?v=1"></script>
-    <script src="assets/js/game.js?v=12"></script>
-    <script src="assets/js/checkers.js?v=8"></script>
-    <script src="assets/js/2048.js?v=9"></script>
-    <script src="assets/js/snake.js?v=13"></script>
-    <script src="assets/js/tetris.js?v=12"></script>
-    <script src="assets/js/battleship.js?v=8"></script>
-    <script src="assets/js/spaceinvaders.js?v=1"></script>
-    <script src="assets/js/app.js?v=8"></script>
-    <script src="auth-ui.js?v=1"></script>
+    <!-- Load game classes first -->
+    <script src="assets/js/game.js"></script>
+    <script src="assets/js/checkers.js"></script>
+    <script src="assets/js/2048.js"></script>
+    <script src="assets/js/snake.js"></script>
+    <script src="assets/js/tetris.js"></script>
+    <script src="assets/js/battleship.js"></script>
+    <script src="assets/js/spaceinvaders.js"></script>
+    
+    <!-- Load app controller after all game classes -->
+    <script src="assets/js/app.js"></script>
+    
+    <!-- Load auth and UI scripts last -->
+    <script src="auth.js"></script>
+    <script src="stripe-integration.js"></script>
+    <script src="auth-ui.js"></script>
     
     <!-- Made by Enrique -->
     <div class="enrique-signature">
