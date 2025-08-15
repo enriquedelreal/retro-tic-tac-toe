@@ -97,6 +97,13 @@ class RetroCheckers {
     handleCellClick(row, col) {
         if (!this.gameActive) return;
 
+        // In AI mode, don't allow human to control black pieces
+        if (this.gameMode === 'ai' && this.currentPlayer === 'black') {
+            console.log('Checkers: AI turn - human cannot move');
+            this.updateStatus('Wait for AI to move...');
+            return;
+        }
+
         const piece = this.board[row][col];
         const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
 
@@ -156,9 +163,13 @@ class RetroCheckers {
         }
 
         const moves = [];
+        // Kings can move in all directions, regular pieces only forward
         const directions = piece.isKing ? [-1, 1] : (piece.type === 'red' ? [-1] : [1]);
 
-        // Check regular moves
+        console.log(`Calculating moves for ${piece.type} ${piece.isKing ? 'KING' : 'piece'} at (${row},${col})`);
+        console.log(`Move directions: [${directions.join(', ')}]`);
+
+        // Check regular moves first
         for (const rowDir of directions) {
             for (const colDir of [-1, 1]) {
                 const newRow = row + rowDir;
@@ -166,11 +177,12 @@ class RetroCheckers {
                 
                 if (this.isValidPosition(newRow, newCol) && this.board[newRow][newCol] === null) {
                     moves.push({ row: newRow, col: newCol, type: 'move' });
+                    console.log(`  Regular move: (${row},${col}) -> (${newRow},${newCol})`);
                 }
             }
         }
 
-        // Check jumps
+        // Check jumps (captures) - PRIORITY!
         for (const rowDir of directions) {
             for (const colDir of [-1, 1]) {
                 const jumpRow = row + rowDir * 2;
@@ -178,16 +190,29 @@ class RetroCheckers {
                 const middleRow = row + rowDir;
                 const middleCol = col + colDir;
                 
-                if (this.isValidPosition(jumpRow, jumpCol) && 
-                    this.board[jumpRow][jumpCol] === null &&
-                    this.board[middleRow][middleCol] &&
-                    this.board[middleRow][middleCol].type !== piece.type) {
-                    moves.push({ row: jumpRow, col: jumpCol, type: 'jump', captured: { row: middleRow, col: middleCol } });
+                console.log(`  Checking jump: (${row},${col}) -> (${middleRow},${middleCol}) -> (${jumpRow},${jumpCol})`);
+                
+                if (this.isValidPosition(jumpRow, jumpCol)) {
+                    const middlePiece = this.board[middleRow][middleCol];
+                    const targetCell = this.board[jumpRow][jumpCol];
+                    
+                    console.log(`    Middle piece: ${middlePiece ? middlePiece.type : 'empty'}`);
+                    console.log(`    Target cell: ${targetCell ? 'occupied' : 'empty'}`);
+                    
+                    if (targetCell === null && middlePiece && middlePiece.type !== piece.type) {
+                        moves.push({ 
+                            row: jumpRow, 
+                            col: jumpCol, 
+                            type: 'jump', 
+                            captured: { row: middleRow, col: middleCol } 
+                        });
+                        console.log(`  *** JUMP FOUND! (${row},${col}) -> (${jumpRow},${jumpCol}) capturing ${middlePiece.type} at (${middleRow},${middleCol})`);
+                    }
                 }
             }
         }
 
-        console.log(`Valid moves for piece at ${row},${col}:`, moves);
+        console.log(`Total valid moves for piece at (${row},${col}):`, moves.length);
         return moves;
     }
 
@@ -239,8 +264,14 @@ class RetroCheckers {
             this.switchPlayer();
             
             // AI move if in AI mode and it's AI's turn
+            console.log('Checkers: Checking AI move conditions:');
+            console.log('  - Game mode:', this.gameMode);
+            console.log('  - Current player:', this.currentPlayer);
+            console.log('  - Should AI move?', this.gameMode === 'ai' && this.currentPlayer === 'black');
+            
             if (this.gameMode === 'ai' && this.currentPlayer === 'black') {
-                console.log('Triggering AI move...');
+                console.log('Checkers: Scheduling AI move in 500ms');
+                this.updateStatus('AI is thinking...');
                 setTimeout(() => {
                     this.makeAIMove();
                 }, 500);
@@ -306,71 +337,75 @@ class RetroCheckers {
     }
 
     makeAIMove() {
-        if (!this.gameActive) return;
-
-        console.log('AI making move...');
-        console.log('Current player:', this.currentPlayer);
-        console.log('Game mode:', this.gameMode);
-
-        // Force AI to be black player
-        const originalPlayer = this.currentPlayer;
-        this.currentPlayer = 'black';
-
-        let move;
-        switch (this.aiDifficulty) {
-            case 'easy':
-                move = this.getRandomAIMove();
-                break;
-            case 'medium':
-                move = Math.random() < 0.7 ? this.getBestAIMove() : this.getRandomAIMove();
-                break;
-            case 'hard':
-                move = this.getBestAIMove();
-                break;
-            default:
-                move = this.getBestAIMove();
+        if (!this.gameActive || this.currentPlayer !== 'black') {
+            console.log('AI: Cannot move - game not active or not AI turn');
+            return;
         }
 
-        console.log('AI move found:', move);
+        console.log('AI: Making move with difficulty:', this.aiDifficulty);
+
+        let move;
+        try {
+            switch (this.aiDifficulty) {
+                case 'easy':
+                    move = this.getRandomAIMove();
+                    break;
+                case 'medium':
+                    move = Math.random() < 0.7 ? this.getBestAIMove() : this.getRandomAIMove();
+                    break;
+                case 'hard':
+                    move = this.getBestAIMove();
+                    break;
+                default:
+                    move = this.getBestAIMove();
+            }
+        } catch (error) {
+            console.error('AI: Error calculating move:', error);
+            move = this.getRandomAIMove();
+        }
+
+        console.log('AI: Selected move:', move);
 
         if (move) {
-            this.selectedPiece = { row: move.from.row, col: move.from.col };
-            this.makeMove(move.to.row, move.to.col);
-        } else {
-            console.log('No valid AI move found! Trying fallback...');
+            console.log('AI: Executing move from', move.from, 'to', move.to);
             
-            // Fallback: try to move any black piece forward
-            const pieces = this.getAllPieces('black');
-            for (const { row, col } of pieces) {
-                // Try to move forward and left or right
-                const directions = [[1, -1], [1, 1]]; // Down-left, Down-right
-                for (const [rowDir, colDir] of directions) {
-                    const newRow = row + rowDir;
-                    const newCol = col + colDir;
-                    if (this.isValidPosition(newRow, newCol) && this.board[newRow][newCol] === null) {
-                        console.log('Fallback move found:', { from: { row, col }, to: { row: newRow, col: newCol } });
-                        this.selectedPiece = { row, col };
-                        this.makeMove(newRow, newCol);
-                        return;
-                    }
+            // Set the selected piece and make the move
+            this.selectedPiece = { row: move.from.row, col: move.from.col };
+            
+            // Update valid moves for the selected piece
+            this.validMoves = this.getValidMoves(move.from.row, move.from.col);
+            console.log('AI: Valid moves for selected piece:', this.validMoves);
+            
+            // Check if the target move is actually valid
+            const isValidTarget = this.isValidMove(move.to.row, move.to.col);
+            console.log('AI: Is target move valid?', isValidTarget);
+            
+            if (isValidTarget) {
+                this.makeMove(move.to.row, move.to.col);
+                console.log('AI: Move executed successfully');
+            } else {
+                console.error('AI: Target move is not valid!');
+                // Try a fallback random move
+                this.selectedPiece = null;
+                const fallbackMove = this.getRandomAIMove();
+                if (fallbackMove) {
+                    this.selectedPiece = { row: fallbackMove.from.row, col: fallbackMove.from.col };
+                    this.validMoves = this.getValidMoves(fallbackMove.from.row, fallbackMove.from.col);
+                    this.makeMove(fallbackMove.to.row, fallbackMove.to.col);
                 }
             }
-            
-            console.log('No fallback moves either!');
-            // If no move found, switch back to player
-            this.currentPlayer = originalPlayer;
-            this.switchPlayer();
+        } else {
+            console.log('AI: No valid moves available - AI loses');
+            this.handleWin();
         }
     }
 
     getRandomAIMove() {
         const pieces = this.getAllPieces('black');
-        console.log('AI pieces:', pieces);
         const validMoves = [];
         
         pieces.forEach(({ row, col }) => {
             const moves = this.getValidMoves(row, col);
-            console.log(`Moves for piece at ${row},${col}:`, moves);
             moves.forEach(move => {
                 validMoves.push({
                     from: { row, col },
@@ -380,32 +415,62 @@ class RetroCheckers {
             });
         });
         
-        console.log('All valid AI moves:', validMoves);
+        console.log('AI: Found', validMoves.length, 'valid moves');
         
         if (validMoves.length === 0) {
-            console.log('No valid moves found for AI!');
-            // Handle no valid moves - game over for black
-            this.handleWin('red');
+            console.log('AI: No valid moves available');
             return null;
         }
         
         const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
-        console.log('Selected random move:', randomMove);
+        console.log('AI: Selected random move from', randomMove.from, 'to', randomMove.to);
         return randomMove;
     }
 
     getBestAIMove() {
         const pieces = this.getAllPieces('black');
-        console.log('Best AI - pieces:', pieces);
         let bestMove = null;
         let bestScore = -Infinity;
         
+        console.log('AI: Analyzing all black pieces for best move...');
+        
         pieces.forEach(({ row, col }) => {
+            const piece = this.board[row][col];
             const moves = this.getValidMoves(row, col);
-            console.log(`Best AI - moves for piece at ${row},${col}:`, moves);
+            console.log(`AI: Piece at (${row},${col}) ${piece.isKing ? '(King)' : '(Regular)'} has ${moves.length} moves:`, moves);
+            
             moves.forEach(move => {
-                // Prioritize captures
-                const score = move.type === 'jump' ? 10 : 1;
+                let score = 1; // Base score for any move
+                
+                // HIGHEST PRIORITY: Captures (jumps)
+                if (move.type === 'jump') {
+                    score = 100; // Much higher priority for captures
+                    console.log(`AI: CAPTURE OPPORTUNITY! From (${row},${col}) to (${move.row},${move.col}) - Score: ${score}`);
+                    
+                    // Extra points for king captures
+                    if (piece.isKing) {
+                        score += 20;
+                        console.log(`AI: King making capture - bonus points! Score: ${score}`);
+                    }
+                } else {
+                    // Regular move scoring
+                    // Prefer moves that advance pieces (for non-kings)
+                    if (!piece.isKing && move.row > row) { // Moving forward (down the board)
+                        score += 3;
+                    }
+                    
+                    // Prefer moves toward center columns
+                    const centerDistance = Math.abs(move.col - 3.5);
+                    score += (4 - centerDistance);
+                    
+                    // Kings get slight bonus for any move
+                    if (piece.isKing) {
+                        score += 2;
+                    }
+                }
+                
+                console.log(`AI: Move from (${row},${col}) to (${move.row},${move.col}) - Type: ${move.type}, Score: ${score}`);
+                
                 if (score > bestScore) {
                     bestScore = score;
                     bestMove = {
@@ -413,22 +478,19 @@ class RetroCheckers {
                         to: { row: move.row, col: move.col },
                         type: move.type
                     };
+                    console.log(`AI: NEW BEST MOVE! Score: ${bestScore}`, bestMove);
                 }
             });
         });
         
-        console.log('Best AI move:', bestMove);
+        console.log('AI: Final best move with score', bestScore, ':', bestMove);
+        
         if (bestMove) {
             return bestMove;
         } else {
-            // If no best move found, try random move
-            const randomMove = this.getRandomAIMove();
-            if (randomMove === null) {
-                // No valid moves at all - game over
-                this.handleWin('red');
-                return null;
-            }
-            return randomMove;
+            // Fallback to random move
+            console.log('AI: No best move found, falling back to random');
+            return this.getRandomAIMove();
         }
     }
 
@@ -474,7 +536,9 @@ class RetroCheckers {
     }
 
     toggleGameMode() {
+        const oldMode = this.gameMode;
         this.gameMode = this.gameMode === 'human' ? 'ai' : 'human';
+        console.log('Checkers: Mode toggled from', oldMode, 'to', this.gameMode);
         this.updateModeDisplay();
         this.resetGame();
         this.updateStatus(this.gameMode === 'ai' ? 'Playing against AI!' : 'Playing against human!');
@@ -664,4 +728,24 @@ class RetroCheckers {
 }
 
 // Export the class for use in app.js
-window.RetroCheckers = RetroCheckers;  
+window.RetroCheckers = RetroCheckers;
+
+// Global test function for checkers AI
+window.testCheckersAI = function() {
+    if (window.retroArcade && window.retroArcade.games && window.retroArcade.games.checkers) {
+        const game = window.retroArcade.games.checkers;
+        console.log('=== TESTING CHECKERS AI ===');
+        console.log('Current game mode:', game.gameMode);
+        console.log('Current player:', game.currentPlayer);
+        console.log('Game active:', game.gameActive);
+        
+        // Force AI mode and black turn for testing
+        game.gameMode = 'ai';
+        game.currentPlayer = 'black';
+        
+        console.log('Forcing AI move...');
+        game.makeAIMove();
+    } else {
+        console.log('Checkers game not found for testing');
+    }
+};  

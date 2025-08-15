@@ -38,13 +38,9 @@
                     <span class="game-icon">🧩</span>
                     <span class="game-name">TETRIS</span>
                 </button>
-                <button class="game-nav-item" data-game="battleship">
-                    <span class="game-icon">⚓</span>
-                    <span class="game-name">BATTLESHIP</span>
-                </button>
-                <button class="game-nav-item" data-game="spaceInvaders">
-                    <span class="game-icon">👾</span>
-                    <span class="game-name">SPACE INVADERS</span>
+                <button class="game-nav-item" data-game="solitaire">
+                    <span class="game-icon">🃏</span>
+                    <span class="game-name">SOLITAIRE</span>
                 </button>
             </nav>
         </div>
@@ -552,17 +548,99 @@
                     </details>
                 </div>
             </div>
+
+            <!-- Solitaire Game -->
+            <div class="game-container" id="solitaire-game">
+                <header class="game-header">
+                    <h1 class="game-title">🎮 SOLITAIRE</h1>
+                    <div class="subtitle">RETRO EDITION</div>
+                </header>
+
+                <div class="game-info">
+                    <div class="player-turn">
+                        <span class="turn-label">SCORE:</span>
+                        <span class="current-player" id="solitaireScore">0</span>
+                    </div>
+                    <div class="move-counter">
+                        <span class="move-label">MOVES:</span>
+                        <span class="move-number" id="solitaireMoves">0</span>
+                    </div>
+                    <div class="player-turn">
+                        <span class="turn-label">TIME:</span>
+                        <span class="current-player" id="solitaireTime">0:00</span>
+                    </div>
+                </div>
+
+                <div class="solitaire-board">
+                    <!-- Top row: Stock, Waste, and Foundations -->
+                    <div class="solitaire-top-row">
+                        <div class="solitaire-stock-waste">
+                            <div class="solitaire-pile" id="solitaireStock"></div>
+                            <div class="solitaire-pile" id="solitaireWaste"></div>
+                        </div>
+                        <div class="solitaire-foundations">
+                            <div class="solitaire-pile foundation" id="solitaireFoundation0"></div>
+                            <div class="solitaire-pile foundation" id="solitaireFoundation1"></div>
+                            <div class="solitaire-pile foundation" id="solitaireFoundation2"></div>
+                            <div class="solitaire-pile foundation" id="solitaireFoundation3"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tableau (7 columns) -->
+                    <div class="solitaire-tableau">
+                        <div class="solitaire-column" id="solitaireTableau0"></div>
+                        <div class="solitaire-column" id="solitaireTableau1"></div>
+                        <div class="solitaire-column" id="solitaireTableau2"></div>
+                        <div class="solitaire-column" id="solitaireTableau3"></div>
+                        <div class="solitaire-column" id="solitaireTableau4"></div>
+                        <div class="solitaire-column" id="solitaireTableau5"></div>
+                        <div class="solitaire-column" id="solitaireTableau6"></div>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="retro-button" id="solitaireNewGame">NEW GAME</button>
+                    <button class="retro-button" id="solitaireAutoComplete">AUTO-COMPLETE</button>
+                    <button class="retro-button" id="solitaireHint">HINT</button>
+                </div>
+
+                <div class="game-status" id="solitaireStatus">Click cards to select and move them. Build foundations from Ace to King!</div>
+                
+                <div class="help-section">
+                    <details class="help-details">
+                        <summary class="help-summary">🎮 CONTROLS & SHORTCUTS</summary>
+                        <div class="help-content">
+                            <p><strong>Mouse:</strong> Click cards to select and move them</p>
+                            <p><strong>Keyboard:</strong></p>
+                            <ul>
+                                <li><strong>N:</strong> New game</li>
+                                <li><strong>H:</strong> Show hint</li>
+                                <li><strong>A:</strong> Auto-complete</li>
+                                <li><strong>F:</strong> Fullscreen</li>
+                            </ul>
+                            <p><strong>Rules:</strong></p>
+                            <ul>
+                                <li>Build foundations from Ace to King by suit</li>
+                                <li>Build tableau in descending order, alternating colors</li>
+                                <li>Only Kings can be placed on empty tableau spaces</li>
+                                <li>Click stock to draw cards</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Load game classes first -->
-    <script src="assets/js/game.js"></script>
-    <script src="assets/js/checkers.js"></script>
+    <script src="assets/js/game.js?v=3"></script>
+    <script src="assets/js/checkers.js?v=4"></script>
     <script src="assets/js/2048.js"></script>
     <script src="assets/js/snake.js"></script>
     <script src="assets/js/tetris.js"></script>
     <script src="assets/js/battleship.js"></script>
     <script src="assets/js/spaceinvaders.js"></script>
+    <script src="assets/js/solitaire.js"></script>
     
     <!-- Load app controller after all game classes -->
     <script src="assets/js/app.js"></script>

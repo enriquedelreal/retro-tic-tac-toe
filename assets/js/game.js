@@ -21,9 +21,15 @@ class RetroTicTacToe {
     }
 
     initializeGame() {
+        console.log('TicTacToe: Initializing game in', this.gameMode, 'mode');
+        
         this.updateDisplay();
         this.updateStatus('Player X starts!');
-        this.updateModeDisplay();
+        
+        // Delay mode display update to ensure DOM elements exist
+        setTimeout(() => {
+            this.updateModeDisplay();
+        }, 100);
     }
 
     setupEventListeners() {
@@ -37,27 +43,41 @@ class RetroTicTacToe {
         });
 
         // Button events
-        document.getElementById('resetGame').addEventListener('click', () => {
-            this.playButtonSound();
-            this.resetGame();
-        });
+        const resetGameBtn = document.getElementById('resetGame');
+        if (resetGameBtn) {
+            resetGameBtn.addEventListener('click', () => {
+                this.playButtonSound();
+                this.resetGame();
+            });
+        }
 
-        document.getElementById('resetScore').addEventListener('click', () => {
-            this.playButtonSound();
-            this.resetScore();
-        });
+        const resetScoreBtn = document.getElementById('resetScore');
+        if (resetScoreBtn) {
+            resetScoreBtn.addEventListener('click', () => {
+                this.playButtonSound();
+                this.resetScore();
+            });
+        }
 
         // Mode toggle
-        document.getElementById('toggleMode').addEventListener('click', () => {
-            this.playButtonSound();
-            this.toggleGameMode();
-        });
+        const toggleModeBtn = document.getElementById('toggleMode');
+        if (toggleModeBtn) {
+            toggleModeBtn.addEventListener('click', () => {
+                console.log('TicTacToe: Toggle mode button clicked');
+                this.playButtonSound();
+                this.toggleGameMode();
+            });
+        }
 
         // Difficulty selector
-        document.getElementById('aiDifficulty').addEventListener('change', (e) => {
-            this.aiDifficulty = e.target.value;
-            this.updateStatus(`AI difficulty set to ${this.aiDifficulty}`);
-        });
+        const aiDifficultySelect = document.getElementById('aiDifficulty');
+        if (aiDifficultySelect) {
+            aiDifficultySelect.addEventListener('change', (e) => {
+                this.aiDifficulty = e.target.value;
+                console.log('TicTacToe: AI difficulty changed to:', this.aiDifficulty);
+                this.updateStatus(`AI difficulty set to ${this.aiDifficulty}`);
+            });
+        }
 
         // Keyboard controls for fullscreen
         document.addEventListener('keydown', (e) => {
@@ -76,7 +96,9 @@ class RetroTicTacToe {
     }
 
     toggleGameMode() {
+        const oldMode = this.gameMode;
         this.gameMode = this.gameMode === 'human' ? 'ai' : 'human';
+        console.log('TicTacToe: Mode toggled from', oldMode, 'to', this.gameMode);
         this.updateModeDisplay();
         this.resetGame();
         this.updateStatus(this.gameMode === 'ai' ? 'Playing against AI!' : 'Playing against human!');
@@ -86,12 +108,26 @@ class RetroTicTacToe {
         const modeButton = document.getElementById('toggleMode');
         const aiControls = document.getElementById('aiControls');
         
-        if (this.gameMode === 'ai') {
-            modeButton.textContent = 'VS HUMAN';
-            aiControls.style.display = 'flex';
+        console.log('TicTacToe: Updating mode display for mode:', this.gameMode);
+        
+        if (modeButton) {
+            if (this.gameMode === 'ai') {
+                modeButton.textContent = 'VS HUMAN';
+            } else {
+                modeButton.textContent = 'VS AI';
+            }
         } else {
-            modeButton.textContent = 'VS AI';
-            aiControls.style.display = 'none';
+            console.warn('TicTacToe: Mode button not found');
+        }
+        
+        if (aiControls) {
+            if (this.gameMode === 'ai') {
+                aiControls.style.display = 'flex';
+            } else {
+                aiControls.style.display = 'none';
+            }
+        } else {
+            console.warn('TicTacToe: AI controls not found');
         }
     }
 
@@ -123,9 +159,18 @@ class RetroTicTacToe {
                 
                 // AI move if in AI mode and it's AI's turn
                 if (this.gameMode === 'ai' && this.currentPlayer === 'O') {
+                    console.log('TicTacToe: Scheduling AI move');
                     setTimeout(() => {
                         this.makeAIMove();
                     }, 500);
+                    
+                    // Failsafe: try again after 2 seconds if the AI hasn't moved
+                    setTimeout(() => {
+                        if (this.gameActive && this.currentPlayer === 'O' && this.gameMode === 'ai') {
+                            console.log('TicTacToe: Failsafe AI move triggered');
+                            this.makeAIMove();
+                        }
+                    }, 2000);
                 }
             }
         } catch (error) {
@@ -134,45 +179,87 @@ class RetroTicTacToe {
     }
 
     makeAIMove() {
-        if (!this.gameActive) return;
-
-        let move;
-        switch (this.aiDifficulty) {
-            case 'easy':
-                move = this.getRandomMove();
-                break;
-            case 'medium':
-                move = Math.random() < 0.7 ? this.getBestMove() : this.getRandomMove();
-                break;
-            case 'hard':
-                move = this.getBestMove();
-                break;
-            default:
-                move = this.getBestMove();
+        if (!this.gameActive) {
+            console.log('AI: Game not active, skipping move');
+            return;
         }
 
-        if (move !== -1) {
+        if (this.currentPlayer !== 'O') {
+            console.log('AI: Not AI turn, current player is:', this.currentPlayer);
+            return;
+        }
+
+        console.log('AI: Making move with difficulty:', this.aiDifficulty);
+        console.log('AI: Current board state:', this.board);
+
+        let move = -1;
+        
+        try {
+            switch (this.aiDifficulty) {
+                case 'easy':
+                    move = this.getRandomMove();
+                    console.log('AI: Easy mode, random move:', move);
+                    break;
+                case 'medium':
+                    const useStrategy = Math.random() < 0.7;
+                    move = useStrategy ? this.getBestMove() : this.getRandomMove();
+                    console.log('AI: Medium mode, use strategy:', useStrategy, 'move:', move);
+                    break;
+                case 'hard':
+                    move = this.getBestMove();
+                    console.log('AI: Hard mode, best move:', move);
+                    break;
+                default:
+                    move = this.getBestMove();
+                    console.log('AI: Default mode, best move:', move);
+            }
+        } catch (error) {
+            console.error('AI: Error calculating move:', error);
+            move = this.getRandomMove(); // Fallback to random
+        }
+
+        console.log('AI: Selected move:', move);
+        
+        if (move !== -1 && move >= 0 && move <= 8 && this.board[move] === '') {
+            console.log('AI: Making move at position:', move);
             this.makeMove(move);
+        } else {
+            console.error('AI: Invalid move selected or position occupied:', move, 'Board position:', this.board[move]);
+            // Try a random fallback
+            const fallbackMove = this.getRandomMove();
+            if (fallbackMove !== -1) {
+                console.log('AI: Using fallback move:', fallbackMove);
+                this.makeMove(fallbackMove);
+            }
         }
     }
 
     getRandomMove() {
-        const availableMoves = this.board
-            .map((cell, index) => cell === '' ? index : -1)
-            .filter(index => index !== -1);
+        const availableMoves = [];
+        for (let i = 0; i < 9; i++) {
+            if (this.board[i] === '') {
+                availableMoves.push(i);
+            }
+        }
         
-        return availableMoves.length > 0 
-            ? availableMoves[Math.floor(Math.random() * availableMoves.length)]
-            : -1;
+        if (availableMoves.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableMoves.length);
+            const move = availableMoves[randomIndex];
+            console.log('AI: Random move selected:', move);
+            return move;
+        }
+        
+        return -1;
     }
 
     getBestMove() {
-        // Check for winning move
+        // Check for winning move first
         for (let i = 0; i < 9; i++) {
             if (this.board[i] === '') {
                 this.board[i] = 'O';
                 if (this.checkWin()) {
                     this.board[i] = '';
+                    console.log('AI: Found winning move at position:', i);
                     return i;
                 }
                 this.board[i] = '';
@@ -185,6 +272,7 @@ class RetroTicTacToe {
                 this.board[i] = 'X';
                 if (this.checkWin()) {
                     this.board[i] = '';
+                    console.log('AI: Found blocking move at position:', i);
                     return i;
                 }
                 this.board[i] = '';
@@ -193,6 +281,7 @@ class RetroTicTacToe {
 
         // Take center if available
         if (this.board[4] === '') {
+            console.log('AI: Taking center position');
             return 4;
         }
 
@@ -200,16 +289,21 @@ class RetroTicTacToe {
         const corners = [0, 2, 6, 8];
         const availableCorners = corners.filter(i => this.board[i] === '');
         if (availableCorners.length > 0) {
-            return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+            const cornerMove = availableCorners[Math.floor(Math.random() * availableCorners.length)];
+            console.log('AI: Taking corner position:', cornerMove);
+            return cornerMove;
         }
 
         // Take any available edge
         const edges = [1, 3, 5, 7];
         const availableEdges = edges.filter(i => this.board[i] === '');
         if (availableEdges.length > 0) {
-            return availableEdges[Math.floor(Math.random() * availableEdges.length)];
+            const edgeMove = availableEdges[Math.floor(Math.random() * availableEdges.length)];
+            console.log('AI: Taking edge position:', edgeMove);
+            return edgeMove;
         }
 
+        console.log('AI: No moves available');
         return -1;
     }
 
@@ -267,19 +361,85 @@ class RetroTicTacToe {
         }, 50);
         
         this.playWinSound();
-        this.updateStatus(`Player ${this.currentPlayer} wins! 🎉`);
+        this.updateStatus(`Player ${this.currentPlayer} wins! 🎉 Starting new game...`);
         
         // Delay disabling the board to allow highlighting to complete
         setTimeout(() => {
             this.disableBoard();
         }, 100);
+        
+        // Automatically reset the board after 2 seconds - Simple approach
+        console.log('TicTacToe: Setting auto-reset timer for win');
+        setTimeout(() => {
+            console.log('TicTacToe: Auto-reset timer fired - clearing board now');
+            
+            // Simple board clear
+            this.board = Array(9).fill('');
+            this.currentPlayer = 'X';
+            this.gameActive = true;
+            this.moveCount = 0;
+            this.gameHistory = [];
+            
+            // Clear cells directly
+            for (let i = 0; i < 9; i++) {
+                const cell = document.querySelector(`[data-index="${i}"]`);
+                if (cell) {
+                    cell.textContent = '';
+                    cell.className = 'cell';
+                }
+            }
+            
+            // Re-enable board
+            const gameBoard = document.getElementById('gameBoard');
+            if (gameBoard) {
+                gameBoard.classList.remove('game-over');
+            }
+            
+            this.updateDisplay();
+            this.updateStatus('New game! Player X starts!');
+            console.log('TicTacToe: Auto-reset completed successfully');
+            
+        }, 2000);
     }
 
     handleDraw() {
         this.gameActive = false;
         this.playDrawSound();
-        this.updateStatus("It's a draw! 🤝");
+        this.updateStatus("It's a draw! 🤝 Starting new game...");
         this.disableBoard();
+        
+        // Automatically reset the board after 2 seconds - Simple approach
+        console.log('TicTacToe: Setting auto-reset timer for draw');
+        setTimeout(() => {
+            console.log('TicTacToe: Auto-reset timer fired - clearing board after draw');
+            
+            // Simple board clear
+            this.board = Array(9).fill('');
+            this.currentPlayer = 'X';
+            this.gameActive = true;
+            this.moveCount = 0;
+            this.gameHistory = [];
+            
+            // Clear cells directly
+            for (let i = 0; i < 9; i++) {
+                const cell = document.querySelector(`[data-index="${i}"]`);
+                if (cell) {
+                    cell.textContent = '';
+                    cell.className = 'cell';
+                }
+            }
+            
+            // Re-enable board
+            const gameBoard = document.getElementById('gameBoard');
+            if (gameBoard) {
+                gameBoard.classList.remove('game-over');
+            }
+            
+            this.updateDisplay();
+            this.updateStatus('New game! Player X starts!');
+            console.log('TicTacToe: Draw auto-reset completed successfully');
+            
+        }, 2000);
     }
 
     highlightWinningCells(combination) {
@@ -317,6 +477,8 @@ class RetroTicTacToe {
     }
 
     resetGame() {
+        console.log('TicTacToe: resetGame() called');
+        
         this.board = Array(9).fill('');
         this.currentPlayer = 'X';
         this.gameActive = true;
@@ -324,18 +486,23 @@ class RetroTicTacToe {
         this.gameHistory = [];
         
         // Clear all cells
-        const cells = document.querySelectorAll('.cell');
-        cells.forEach(cell => {
-            cell.textContent = '';
-            cell.className = 'cell';
-        });
+        for (let i = 0; i < 9; i++) {
+            const cell = document.querySelector(`[data-index="${i}"]`);
+            if (cell) {
+                cell.textContent = '';
+                cell.className = 'cell';
+            }
+        }
         
         // Re-enable board
         const gameBoard = document.getElementById('gameBoard');
-        gameBoard.classList.remove('game-over');
+        if (gameBoard) {
+            gameBoard.classList.remove('game-over');
+        }
         
         this.updateDisplay();
         this.updateStatus('New game! Player X starts!');
+        console.log('TicTacToe: resetGame() completed');
     }
 
     resetScore() {
@@ -343,6 +510,42 @@ class RetroTicTacToe {
         this.updateScores();
         this.resetGame();
         this.updateStatus('Scores reset! New game!');
+    }
+
+    // Test function to manually trigger auto-reset
+    testAutoReset() {
+        console.log('=== TESTING AUTO-RESET ===');
+        console.log('TicTacToe: Auto-reset test - clearing board now');
+        
+        // Simple board clear
+        this.board = Array(9).fill('');
+        this.currentPlayer = 'X';
+        this.gameActive = true;
+        this.moveCount = 0;
+        this.gameHistory = [];
+        
+        // Clear cells directly
+        for (let i = 0; i < 9; i++) {
+            const cell = document.querySelector(`[data-index="${i}"]`);
+            if (cell) {
+                cell.textContent = '';
+                cell.className = 'cell';
+                console.log(`TicTacToe: Test cleared cell ${i}: ${cell.textContent === '' ? 'SUCCESS' : 'FAILED'}`);
+            } else {
+                console.log(`TicTacToe: Test - could not find cell ${i}`);
+            }
+        }
+        
+        // Re-enable board
+        const gameBoard = document.getElementById('gameBoard');
+        if (gameBoard) {
+            gameBoard.classList.remove('game-over');
+            console.log('TicTacToe: Test - re-enabled game board');
+        }
+        
+        this.updateDisplay();
+        this.updateStatus('Test auto-reset completed! Player X starts!');
+        console.log('TicTacToe: Test auto-reset completed successfully');
     }
 
     updateDisplay() {
@@ -458,4 +661,13 @@ class RetroTicTacToe {
 }
 
 // Export the class for use in app.js
-window.RetroTicTacToe = RetroTicTacToe; 
+window.RetroTicTacToe = RetroTicTacToe;
+
+// Global test function
+window.testAutoReset = function() {
+    if (window.retroArcade && window.retroArcade.games && window.retroArcade.games.tictactoe) {
+        window.retroArcade.games.tictactoe.testAutoReset();
+    } else {
+        console.log('Game not found for testing');
+    }
+}; 

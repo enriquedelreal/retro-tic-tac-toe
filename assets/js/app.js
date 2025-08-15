@@ -22,7 +22,8 @@ class RetroGameArcade {
             '2048': null,
             snake: null,
             tetris: null,
-            battleship: null
+            battleship: null,
+            solitaire: null
         };
         
         // Simple initialization
@@ -91,6 +92,13 @@ class RetroGameArcade {
                 console.log('Space Invaders initialized');
             } else {
                 console.error('RetroSpaceInvaders not found');
+            }
+            
+            if (typeof RetroSolitaire !== 'undefined') {
+                this.games.solitaire = new RetroSolitaire();
+                console.log('Solitaire initialized');
+            } else {
+                console.error('RetroSolitaire not found');
             }
             
             // Show initial game
@@ -168,6 +176,18 @@ class RetroGameArcade {
         } else {
             sidebar.classList.remove('collapsed');
             toggle.textContent = '◀';
+        }
+    }
+
+    autoCloseSidebar() {
+        // Only close sidebar if it's currently open
+        if (!this.sidebarCollapsed) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('sidebarToggle');
+            
+            this.sidebarCollapsed = true;
+            sidebar.classList.add('collapsed');
+            toggle.textContent = '▶';
         }
     }
 
@@ -256,6 +276,11 @@ class RetroGameArcade {
         
         this.currentGame = gameName;
         
+        // Auto-close sidebar when switching games (with small delay for better UX)
+        setTimeout(() => {
+            this.autoCloseSidebar();
+        }, 300);
+        
         // Play switch sound
         this.playSwitchSound();
     }
@@ -311,6 +336,11 @@ class RetroGameArcade {
             
             this.currentGame = gameName;
             
+            // Auto-close sidebar when switching games (with small delay for better UX)
+            setTimeout(() => {
+                this.autoCloseSidebar();
+            }, 300);
+            
         } catch (error) {
             console.error('Error in simpleSwitchGame:', error);
         }
@@ -360,7 +390,7 @@ function initializeApp() {
     // Check if all required classes are available
     const requiredClasses = [
         'RetroTicTacToe', 'RetroCheckers', 'Retro2048', 
-        'RetroSnake', 'RetroTetris', 'RetroBattleship', 'RetroSpaceInvaders'
+        'RetroSnake', 'RetroTetris', 'RetroBattleship', 'RetroSpaceInvaders', 'RetroSolitaire'
     ];
     
     const missingClasses = requiredClasses.filter(className => typeof window[className] === 'undefined');
