@@ -87,22 +87,24 @@ class AuthUI {
         `;
         document.body.appendChild(authOverlay);
 
-        // Create user info bar
-        const userBar = document.createElement('div');
-        userBar.id = 'userBar';
-        userBar.className = 'user-bar';
-        userBar.innerHTML = `
-            <div class="user-info">
-                <span id="userEmail">Not logged in</span>
-                <span id="subscriptionStatus">No subscription</span>
-            </div>
-            <div class="user-actions">
-                <button class="retro-button small" id="userDashboard">DASHBOARD</button>
-                <button class="retro-button small" id="userLogout">LOGOUT</button>
-                <button class="retro-button small" id="userLogin">LOGIN</button>
-            </div>
-        `;
-        document.body.appendChild(userBar);
+        // Create user info bar only if subscription system is enabled
+        if (this.authManager && this.authManager.SUBSCRIPTION_ENABLED) {
+            const userBar = document.createElement('div');
+            userBar.id = 'userBar';
+            userBar.className = 'user-bar';
+            userBar.innerHTML = `
+                <div class="user-info">
+                    <span id="userEmail">Not logged in</span>
+                    <span id="subscriptionStatus">No subscription</span>
+                </div>
+                <div class="user-actions">
+                    <button class="retro-button small" id="userDashboard">DASHBOARD</button>
+                    <button class="retro-button small" id="userLogout">LOGOUT</button>
+                    <button class="retro-button small" id="userLogin">LOGIN</button>
+                </div>
+            `;
+            document.body.appendChild(userBar);
+        }
 
         // Create dashboard modal
         const dashboardModal = document.createElement('div');
@@ -552,22 +554,8 @@ class AuthUI {
 
     // Hide the user interface when subscription is disabled
     hideUserInterface() {
-        // Create a minimal user bar that shows the system is in free mode
-        const userBar = document.createElement('div');
-        userBar.id = 'userBar';
-        userBar.className = 'user-bar';
-        userBar.innerHTML = `
-            <div class="user-info">
-                <span id="userEmail">🎮 FREE ACCESS MODE</span>
-                <span id="subscriptionStatus">All games unlocked</span>
-            </div>
-            <div class="user-actions">
-                <button class="retro-button small" onclick="alert('Subscription system is currently disabled. Set SUBSCRIPTION_ENABLED = true in auth.js to enable.')">
-                    ENABLE SUBSCRIPTIONS
-                </button>
-            </div>
-        `;
-        document.body.appendChild(userBar);
+        // Hide subscription UI completely when system is disabled
+        // No user bar will be shown in free mode
     }
 
     // Check for referral code in URL
