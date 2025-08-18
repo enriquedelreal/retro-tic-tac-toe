@@ -1,0 +1,22 @@
+{
+  "name": "retro-game-arcade",
+  "version": "1.0.0",
+  "description": "A collection of retro games in a web-based arcade",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'No build step required for static files'",
+    "test": "echo 'No tests specified'"
+  },
+  "keywords": ["games", "retro", "arcade", "javascript"],
+  "author": "Enrique",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
