@@ -4,7 +4,7 @@ A collection of classic retro games built with HTML5, CSS3, and JavaScript. Expe
 
 ## 🎯 Live Demo
 
-**[Play Now!](https://your-username.github.io/retro-tic-tac-toe/)**
+**[Play Now!](https://enriquedelreal.github.io/retro-tic-tac-toe/)**
 
 ## 🎲 Games Included
 
@@ -44,7 +44,7 @@ Simply visit the live demo link above and start playing immediately!
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/retro-tic-tac-toe.git
+   git clone https://github.com/enriquedelreal/retro-tic-tac-toe.git
    cd retro-tic-tac-toe
    ```
 
@@ -184,8 +184,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-- **GitHub**: [@your-username](https://github.com/your-username)
-- **Project Link**: [https://github.com/your-username/retro-tic-tac-toe](https://github.com/your-username/retro-tic-tac-toe)
+- **GitHub**: [@enriquedelreal](https://github.com/enriquedelreal)
+- **Project Link**: [https://github.com/enriquedelreal/retro-tic-tac-toe](https://github.com/enriquedelreal/retro-tic-tac-toe)
 
 ---
 
