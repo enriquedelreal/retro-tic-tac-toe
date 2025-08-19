@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #4a4a6a;
+            border-radius: 10px;
+        }
+        canvas {
+            border: 2px solid #4a4a6a;
+            background: #2a2a4a;
+        }
+        button {
+            background: #4a4a6a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #5a5a7a;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Test Page</h1>
+    
+    <div class="test-section">
+        <h2>Pong Test</h2>
+        <canvas id="pongCanvas" width="400" height="300"></canvas>
+        <br>
+        <button onclick="testPong()">Test Pong</button>
+        <button onclick="startPong()">Start Pong</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Breakout Test</h2>
+        <canvas id="breakoutCanvas" width="400" height="300"></canvas>
+        <br>
+        <button onclick="testBreakout()">Test Breakout</button>
+        <button onclick="startBreakout()">Start Breakout</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Pac-Man Test</h2>
+        <canvas id="pacmanCanvas" width="400" height="300"></canvas>
+        <br>
+        <button onclick="testPacman()">Test Pac-Man</button>
+        <button onclick="startPacman()">Start Pac-Man</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Minesweeper Test</h2>
+        <div id="minesweeperBoard" style="display: grid; grid-template-columns: repeat(9, 30px); gap: 2px; background: #2a2a4a; padding: 10px; border-radius: 5px;"></div>
+        <br>
+        <button onclick="testMinesweeper()">Test Minesweeper</button>
+    </div>
+
+    <script src="assets/js/pong.js"></script>
+    <script src="assets/js/breakout.js"></script>
+    <script src="assets/js/pacman.js"></script>
+    <script src="assets/js/minesweeper.js"></script>
+    
+    <script>
+        let pongGame, breakoutGame, pacmanGame, minesweeperGame;
+        
+        function testPong() {
+            console.log('Testing Pong...');
+            if (typeof RetroPong !== 'undefined') {
+                pongGame = new RetroPong();
+                console.log('Pong created:', pongGame);
+            } else {
+                console.error('RetroPong not found');
+            }
+        }
+        
+        function startPong() {
+            if (pongGame) {
+                pongGame.startGame();
+            }
+        }
+        
+        function testBreakout() {
+            console.log('Testing Breakout...');
+            if (typeof RetroBreakout !== 'undefined') {
+                breakoutGame = new RetroBreakout();
+                console.log('Breakout created:', breakoutGame);
+            } else {
+                console.error('RetroBreakout not found');
+            }
+        }
+        
+        function startBreakout() {
+            if (breakoutGame) {
+                breakoutGame.startGame();
+            }
+        }
+        
+        function testPacman() {
+            console.log('Testing Pac-Man...');
+            if (typeof RetroPacman !== 'undefined') {
+                pacmanGame = new RetroPacman();
+                console.log('Pac-Man created:', pacmanGame);
+            } else {
+                console.error('RetroPacman not found');
+            }
+        }
+        
+        function startPacman() {
+            if (pacmanGame) {
+                pacmanGame.startGame();
+            }
+        }
+        
+        function testMinesweeper() {
+            console.log('Testing Minesweeper...');
+            if (typeof RetroMinesweeper !== 'undefined') {
+                minesweeperGame = new RetroMinesweeper();
+                console.log('Minesweeper created:', minesweeperGame);
+            } else {
+                console.error('RetroMinesweeper not found');
+            }
+        }
+        
+        // Test all games on load
+        window.addEventListener('load', () => {
+            console.log('Page loaded, testing games...');
+            console.log('RetroPong available:', typeof RetroPong !== 'undefined');
+            console.log('RetroBreakout available:', typeof RetroBreakout !== 'undefined');
+            console.log('RetroPacman available:', typeof RetroPacman !== 'undefined');
+            console.log('RetroMinesweeper available:', typeof RetroMinesweeper !== 'undefined');
+        });
+    </script>
+</body>
+</html>
