@@ -166,7 +166,7 @@ class RetroSolitaire {
 
         // Try to move if we have a selection
         if (this.selectedCard) {
-            console.log('Attempting move from', this.selectedPile, 'to', pile);
+            console.log('Attempting move from', this.selectedPile, 'to', pile, 'cardIndex:', cardIndex);
             if (this.tryMove(this.selectedPile, this.selectedCard.index, pile, cardIndex)) {
                 this.deselectCard();
                 this.moves++;
@@ -188,6 +188,13 @@ class RetroSolitaire {
         } else if (pile.startsWith('foundation') && this.foundations[parseInt(pile.replace('foundation', ''))].length === 0) {
             // Handle clicking on empty foundation pile - this is a valid target for moving cards
             // Don't select it, but it can be used as a target in the next click
+        } else if (pile.startsWith('tableau')) {
+            const tableauIndex = parseInt(pile.replace('tableau', ''));
+            const tableau = this.tableau[tableauIndex];
+            if (tableau.length === 0) {
+                // Handle clicking on empty tableau pile - this is a valid target for moving kings
+                // Don't select it, but it can be used as a target in the next click
+            }
         }
     }
 
@@ -291,14 +298,21 @@ class RetroSolitaire {
 
         const bottomCard = cardsToMove[0]; // Bottom card of selection
 
+        console.log('Moving to tableau:', fromPile, 'to', toPile, 'bottom card:', bottomCard, 'tableau length:', tableau.length);
+
         // Check if move is valid
         if (tableau.length === 0) {
             // Empty tableau - must be King
-            if (bottomCard.rank !== 'K') return false;
+            console.log('Empty tableau, checking if card is King:', bottomCard.rank);
+            if (bottomCard.rank !== 'K') {
+                console.log('Move failed: not a King');
+                return false;
+            }
         } else {
             // Must be opposite color and one rank lower
             const topCard = tableau[tableau.length - 1];
             if (bottomCard.color === topCard.color || bottomCard.value !== topCard.value - 1) {
+                console.log('Move failed: invalid card placement');
                 return false;
             }
         }
@@ -309,6 +323,7 @@ class RetroSolitaire {
         // Add cards to tableau
         tableau.push(...cardsToMove);
         
+        console.log('Move successful');
         this.renderGame();
         return true;
     }
@@ -571,7 +586,13 @@ class RetroSolitaire {
             });
             
             if (tableau.length === 0) {
-                tableauElement.innerHTML = '<div class="empty-pile tableau-empty">K</div>';
+                const emptyPile = document.createElement('div');
+                emptyPile.className = 'empty-pile tableau-empty';
+                emptyPile.innerHTML = 'K';
+                emptyPile.addEventListener('click', () => {
+                    this.selectCard(`tableau${col}`, 0);
+                });
+                tableauElement.appendChild(emptyPile);
             }
         }
     }
