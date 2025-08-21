@@ -81,16 +81,32 @@ io.on('connection', (socket) => {
 
     // Handle game move
     socket.on('makeMove', (data) => {
+        console.log(`🎮 Server: makeMove received from ${socket.id}:`, data);
         const { roomId, position } = data;
         const room = gameRooms.get(roomId);
         
-        if (!room) return;
+        if (!room) {
+            console.log(`🎮 Server: Room ${roomId} not found`);
+            return;
+        }
         
         const player = room.players.find(p => p.id === socket.id);
-        if (!player || player.symbol !== room.gameState.currentPlayer) return;
+        console.log(`🎮 Server: Player found:`, player);
+        console.log(`🎮 Server: Current player should be: ${room.gameState.currentPlayer}`);
+        
+        if (!player) {
+            console.log(`🎮 Server: Player not found in room`);
+            return;
+        }
+        
+        if (player.symbol !== room.gameState.currentPlayer) {
+            console.log(`🎮 Server: Not player's turn. Player symbol: ${player.symbol}, Current player: ${room.gameState.currentPlayer}`);
+            return;
+        }
         
         // Make the move
         if (room.gameState.board[position] === '' && room.gameState.gameActive) {
+            console.log(`🎮 Server: Making move at position ${position} with symbol ${player.symbol}`);
             room.gameState.board[position] = player.symbol;
             
             // Check for win
@@ -123,6 +139,7 @@ io.on('connection', (socket) => {
             }
             
             // Broadcast updated game state
+            console.log(`🎮 Server: Broadcasting game state to room ${roomId}:`, room.gameState);
             io.to(roomId).emit('gameState', room.gameState);
         }
     });

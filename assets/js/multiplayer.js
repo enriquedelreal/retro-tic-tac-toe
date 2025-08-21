@@ -106,7 +106,9 @@ class MultiplayerManager {
         });
 
         this.socket.on('gameState', (gameState) => {
-            console.log('🎮 Received game state:', gameState);
+            console.log('🎮 Received game state from server:', gameState);
+            console.log('🎮 Board:', gameState.board);
+            console.log('🎮 Current player:', gameState.currentPlayer);
             this.handleGameStateUpdate(gameState);
         });
 
@@ -333,11 +335,12 @@ class MultiplayerManager {
         console.log('🎮 playerSymbol:', this.playerSymbol);
         
         if (this.socket && this.isConnected && this.roomId) {
-            console.log('🎮 Emitting makeMove event to server');
-            this.socket.emit('makeMove', {
+            const moveData = {
                 roomId: this.roomId,
                 position: position
-            });
+            };
+            console.log('🎮 Emitting makeMove event to server with data:', moveData);
+            this.socket.emit('makeMove', moveData);
             
             // Show feedback that move was sent
             this.updateStatus('Move sent to server...');
