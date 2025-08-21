@@ -30,6 +30,14 @@ class RetroTicTacToe {
         setTimeout(() => {
             this.updateModeDisplay();
         }, 100);
+        
+        // Test display after a short delay
+        setTimeout(() => {
+            console.log('🎮 Testing display with sample X and O...');
+            this.board = ['X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X'];
+            this.updateDisplay();
+            console.log('🎮 Test display completed');
+        }, 2000);
     }
 
     setupEventListeners() {
@@ -574,18 +582,27 @@ class RetroTicTacToe {
         
         // Update all board cells
         const cells = document.querySelectorAll('.cell');
+        console.log('🎮 Found cells:', cells.length);
+        
         cells.forEach((cell, index) => {
             const cellValue = this.board[index];
+            console.log(`🎮 Cell ${index}: value="${cellValue}", current text="${cell.textContent}"`);
+            
             cell.textContent = cellValue;
             
             // Update cell styling
             if (cellValue === 'X') {
                 cell.className = 'cell x';
+                console.log(`🎮 Cell ${index}: set class to 'cell x'`);
             } else if (cellValue === 'O') {
                 cell.className = 'cell o';
+                console.log(`🎮 Cell ${index}: set class to 'cell o'`);
             } else {
                 cell.className = 'cell';
+                console.log(`🎮 Cell ${index}: set class to 'cell'`);
             }
+            
+            console.log(`🎮 Cell ${index}: final text="${cell.textContent}", final class="${cell.className}"`);
         });
         
         // Update scores
