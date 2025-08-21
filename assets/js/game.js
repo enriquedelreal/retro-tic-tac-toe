@@ -308,21 +308,34 @@ class RetroTicTacToe {
     }
 
     updateCell(index) {
+        console.log('🎮 updateCell() called for index:', index);
+        console.log('🎮 cell value:', this.board[index]);
+        
         const cell = document.querySelector(`[data-index="${index}"]`);
-        cell.textContent = this.board[index];
-        cell.classList.add(this.board[index].toLowerCase());
-        
-        // Add enhanced animation
-        cell.style.animation = 'none';
-        cell.offsetHeight; // Trigger reflow
-        cell.style.animation = 'placeSymbol 0.4s ease-out';
-        
-        // Highlight last move
-        document.querySelectorAll('.cell').forEach(c => c.classList.remove('last-move'));
-        cell.classList.add('last-move');
-        
-        // Update move counter
-        this.updateMoveCounter();
+        if (cell) {
+            cell.textContent = this.board[index];
+            
+            // Update cell styling
+            if (this.board[index] === 'X') {
+                cell.className = 'cell x';
+            } else if (this.board[index] === 'O') {
+                cell.className = 'cell o';
+            } else {
+                cell.className = 'cell';
+            }
+            
+            // Add enhanced animation
+            cell.style.animation = 'none';
+            cell.offsetHeight; // Trigger reflow
+            cell.style.animation = 'placeSymbol 0.4s ease-out';
+            
+            // Highlight last move
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('last-move'));
+            cell.classList.add('last-move');
+            
+            // Update move counter
+            this.updateMoveCounter();
+        }
     }
 
     checkWin() {
@@ -549,7 +562,37 @@ class RetroTicTacToe {
     }
 
     updateDisplay() {
-        document.getElementById('currentPlayer').textContent = this.currentPlayer;
+        console.log('🎮 updateDisplay() called');
+        console.log('🎮 currentPlayer:', this.currentPlayer);
+        console.log('🎮 board:', this.board);
+        
+        // Update current player display
+        const currentPlayerElement = document.getElementById('currentPlayer');
+        if (currentPlayerElement) {
+            currentPlayerElement.textContent = this.currentPlayer;
+        }
+        
+        // Update all board cells
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach((cell, index) => {
+            const cellValue = this.board[index];
+            cell.textContent = cellValue;
+            
+            // Update cell styling
+            if (cellValue === 'X') {
+                cell.className = 'cell x';
+            } else if (cellValue === 'O') {
+                cell.className = 'cell o';
+            } else {
+                cell.className = 'cell';
+            }
+        });
+        
+        // Update scores
+        this.updateScores();
+        
+        // Update move counter
+        this.updateMoveCounter();
     }
 
     updateScores() {
