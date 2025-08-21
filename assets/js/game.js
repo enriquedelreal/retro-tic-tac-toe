@@ -734,12 +734,28 @@ class RetroTicTacToe {
         // Ensure we're in multiplayer mode
         this.gameMode = 'multiplayer';
         
+        // Fix corrupted currentPlayer value
+        let fixedCurrentPlayer = gameState.currentPlayer;
+        if (fixedCurrentPlayer === '0' || fixedCurrentPlayer === 0) {
+            console.log('🎮 Fixing corrupted currentPlayer from', fixedCurrentPlayer, 'to X');
+            fixedCurrentPlayer = 'X';
+        }
+        
         // Update game state from server
         this.board = [...gameState.board];
-        this.currentPlayer = gameState.currentPlayer;
+        this.currentPlayer = fixedCurrentPlayer;
         this.gameActive = gameState.gameActive;
         this.scores = { ...gameState.scores };
         this.moveCount = gameState.board.filter(cell => cell !== '').length;
+        
+        // Fix any corrupted board values
+        this.board = this.board.map(cell => {
+            if (cell === '0' || cell === 0) {
+                console.log('🎮 Fixing corrupted board cell from', cell, 'to empty string');
+                return '';
+            }
+            return cell;
+        });
         
         console.log('🎮 Updated local state:');
         console.log('🎮 board:', this.board);

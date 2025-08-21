@@ -73,6 +73,8 @@ io.on('connection', (socket) => {
         }
         
         // Notify all players in the room
+        console.log(`🎮 Server: Sending game state to room ${roomId}:`, room.gameState);
+        console.log(`🎮 Server: Current player in game state: ${room.gameState.currentPlayer}`);
         io.to(roomId).emit('gameState', room.gameState);
         io.to(roomId).emit('playersUpdate', room.players);
         
