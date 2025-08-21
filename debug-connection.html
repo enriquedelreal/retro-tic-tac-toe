@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Connection Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .debug-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .connected { background: #4CAF50; }
+        .disconnected { background: #f44336; }
+        .connecting { background: #ff9800; }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Socket.IO Connection Debug</h1>
+    
+    <div class="debug-section">
+        <h2>Current Page Info</h2>
+        <p><strong>Protocol:</strong> <span id="protocol"></span></p>
+        <p><strong>Hostname:</strong> <span id="hostname"></span></p>
+        <p><strong>Port:</strong> <span id="port"></span></p>
+        <p><strong>Full URL:</strong> <span id="fullUrl"></span></p>
+    </div>
+
+    <div class="debug-section">
+        <h2>Connection Test</h2>
+        <div id="connectionStatus" class="status disconnected">Not Connected</div>
+        <button onclick="testLocalConnection()">Test Local Connection (localhost:8000)</button>
+        <button onclick="testAutoConnection()">Test Auto Connection</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>Connection Log</h2>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = null;
+        
+        // Display current page info
+        document.getElementById('protocol').textContent = window.location.protocol;
+        document.getElementById('hostname').textContent = window.location.hostname;
+        document.getElementById('port').textContent = window.location.port || 'default';
+        document.getElementById('fullUrl').textContent = window.location.href;
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateStatus(message, className) {
+            const statusDiv = document.getElementById('connectionStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${className}`;
+        }
+        
+        function testLocalConnection() {
+            log('🔌 Testing connection to localhost:8000...');
+            updateStatus('Connecting...', 'connecting');
+            
+            if (socket) {
+                socket.disconnect();
+            }
+            
+            socket = io('http://localhost:8000', {
+                transports: ['websocket', 'polling'],
+                timeout: 10000,
+                forceNew: true
+            });
+            
+            socket.on('connect', () => {
+                log('✅ Connected to localhost:8000!');
+                updateStatus('Connected to localhost:8000', 'connected');
+            });
+            
+            socket.on('disconnect', () => {
+                log('❌ Disconnected from localhost:8000');
+                updateStatus('Disconnected', 'disconnected');
+            });
+            
+            socket.on('connect_error', (error) => {
+                log(`❌ Connection error: ${error.message}`);
+                updateStatus('Connection failed', 'disconnected');
+            });
+        }
+        
+        function testAutoConnection() {
+            log('🔌 Testing auto connection...');
+            updateStatus('Connecting...', 'connecting');
+            
+            if (socket) {
+                socket.disconnect();
+            }
+            
+            // Use the same logic as the multiplayer.js
+            const serverUrl = window.location.hostname === 'localhost' 
+                ? 'http://localhost:8000' 
+                : `https://${window.location.hostname}`;
+            
+            log(`🎯 Attempting to connect to: ${serverUrl}`);
+            
+            socket = io(serverUrl, {
+                transports: ['websocket', 'polling'],
+                timeout: 10000,
+                forceNew: true
+            });
+            
+            socket.on('connect', () => {
+                log(`✅ Connected to ${serverUrl}!`);
+                updateStatus(`Connected to ${serverUrl}`, 'connected');
+            });
+            
+            socket.on('disconnect', () => {
+                log(`❌ Disconnected from ${serverUrl}`);
+                updateStatus('Disconnected', 'disconnected');
+            });
+            
+            socket.on('connect_error', (error) => {
+                log(`❌ Connection error: ${error.message}`);
+                updateStatus('Connection failed', 'disconnected');
+            });
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            log('🚀 Page loaded, ready for testing');
+            log(`📍 Current location: ${window.location.href}`);
+        });
+    </script>
+</body>
+</html>

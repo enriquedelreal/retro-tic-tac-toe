@@ -1,22 +1,27 @@
 {
-  "name": "retro-game-arcade",
+  "name": "retro-tic-tac-toe",
   "version": "1.0.0",
-  "description": "A collection of retro games in a web-based arcade",
+  "description": "Retro arcade games with multiplayer support",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "build": "echo 'No build step required for static files'",
-    "test": "echo 'No tests specified'"
+    "dev": "nodemon server.js"
   },
-  "keywords": ["games", "retro", "arcade", "javascript"],
-  "author": "Enrique",
-  "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "socket.io": "^4.7.4",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
-  }
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "games",
+    "retro",
+    "multiplayer",
+    "tic-tac-toe"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
 }

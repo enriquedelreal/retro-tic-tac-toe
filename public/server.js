@@ -10,11 +10,7 @@ const io = socketIo(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"]
-    },
-    transports: ['polling', 'websocket'],
-    allowEIO3: true,
-    pingTimeout: 60000,
-    pingInterval: 25000
+    }
 });
 
 const PORT = process.env.PORT || 8000;
@@ -25,10 +21,7 @@ app.use(cors());
 // Parse JSON bodies
 app.use(express.json());
 
-// Serve static files from the public directory
-app.use(express.static('public'));
-
-// Serve static files from the root directory (for assets, CSS, JS files)
+// Serve static files from the current directory
 app.use(express.static('.'));
 
 // Game state management
@@ -140,7 +133,7 @@ io.on('connection', (socket) => {
 
     // Create new room
     socket.on('createRoom', () => {
-        const roomId = Math.floor(10000 + Math.random() * 90000).toString(); // 5-digit code
+        const roomId = 'room_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         socket.emit('roomCreated', roomId);
     });
 
