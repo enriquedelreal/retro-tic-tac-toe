@@ -31,13 +31,15 @@ class RetroTicTacToe {
             this.updateModeDisplay();
         }, 100);
         
-        // Test display after a short delay
-        setTimeout(() => {
-            console.log('🎮 Testing display with sample X and O...');
-            this.board = ['X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X'];
-            this.updateDisplay();
-            console.log('🎮 Test display completed');
-        }, 2000);
+        // Test display after a short delay (only in local mode)
+        if (this.gameMode !== 'multiplayer') {
+            setTimeout(() => {
+                console.log('🎮 Testing display with sample X and O...');
+                this.board = ['X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X'];
+                this.updateDisplay();
+                console.log('🎮 Test display completed');
+            }, 2000);
+        }
     }
 
     setupEventListeners() {
@@ -727,11 +729,22 @@ class RetroTicTacToe {
     }
 
     updateFromServer(gameState) {
+        console.log('🎮 updateFromServer() called with gameState:', gameState);
+        
+        // Ensure we're in multiplayer mode
+        this.gameMode = 'multiplayer';
+        
         // Update game state from server
         this.board = [...gameState.board];
         this.currentPlayer = gameState.currentPlayer;
         this.gameActive = gameState.gameActive;
         this.scores = { ...gameState.scores };
+        
+        console.log('🎮 Updated local state:');
+        console.log('🎮 board:', this.board);
+        console.log('🎮 currentPlayer:', this.currentPlayer);
+        console.log('🎮 gameActive:', this.gameActive);
+        console.log('🎮 gameMode:', this.gameMode);
         
         // Update display
         this.updateDisplay();

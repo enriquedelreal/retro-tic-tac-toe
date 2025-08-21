@@ -398,6 +398,13 @@ class MultiplayerManager {
             this.showMultiplayerControls();
             this.hideRoomCode(); // Hide the room code popup
             this.updateStatus('Game ready! Both players connected.');
+            
+            // Ensure the game is in multiplayer mode
+            if (window.retroArcade && window.retroArcade.games.tictactoe) {
+                const game = window.retroArcade.games.tictactoe;
+                game.setGameMode('multiplayer');
+                console.log('🎮 Game mode set to multiplayer for both players');
+            }
         } else if (players.length === 1) {
             this.updateStatus('Waiting for second player...');
         }
