@@ -97,9 +97,12 @@ class MultiplayerManager {
         this.socket.on('roomCreated', (roomId) => {
             console.log('🎮 Room created event received:', roomId);
             this.roomId = roomId;
-            this.joinRoom(roomId);
+            // Don't auto-join the room, just display the code
             this.updateRoomDisplay();
-            this.updateStatus(`Room created! Code: ${roomId}`);
+            this.updateStatus(`Room created! Code: ${roomId} - Share this code with your friend!`);
+            
+            // Show the room code prominently
+            this.showRoomCode(roomId);
         });
 
         this.socket.on('gameState', (gameState) => {
@@ -352,6 +355,8 @@ class MultiplayerManager {
     }
 
     handlePlayersUpdate(players) {
+        console.log('🎮 Handling players update:', players);
+        
         // Find current player
         const currentPlayer = players.find(p => p.id === this.socket.id);
         if (currentPlayer) {
@@ -366,6 +371,10 @@ class MultiplayerManager {
         if (players.length === 2) {
             this.hideLobby();
             this.showMultiplayerControls();
+            this.hideRoomCode(); // Hide the room code popup
+            this.updateStatus('Game ready! Both players connected.');
+        } else if (players.length === 1) {
+            this.updateStatus('Waiting for second player...');
         }
     }
 
@@ -504,6 +513,63 @@ class MultiplayerManager {
             }).catch(() => {
                 this.updateStatus('Failed to copy room ID');
             });
+        }
+    }
+    
+    showRoomCode(roomId) {
+        // Create a prominent room code display
+        let roomCodeDisplay = document.getElementById('roomCodeDisplay');
+        if (!roomCodeDisplay) {
+            roomCodeDisplay = document.createElement('div');
+            roomCodeDisplay.id = 'roomCodeDisplay';
+            roomCodeDisplay.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #2a2a2a;
+                border: 3px solid #4aff4a;
+                border-radius: 10px;
+                padding: 30px;
+                text-align: center;
+                z-index: 10000;
+                box-shadow: 0 0 20px rgba(74, 255, 74, 0.5);
+                min-width: 300px;
+            `;
+            document.body.appendChild(roomCodeDisplay);
+        }
+        
+        roomCodeDisplay.innerHTML = `
+            <h2 style="color: #4aff4a; margin: 0 0 20px 0;">🎮 ROOM CREATED!</h2>
+            <div style="font-size: 2rem; font-weight: bold; color: #fff; margin: 20px 0; letter-spacing: 5px;">${roomId}</div>
+            <p style="color: #b0c4de; margin: 10px 0;">Share this code with your friend</p>
+            <button onclick="multiplayerManager.copyRoomId()" style="
+                background: #4aff4a;
+                color: #000;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                font-weight: bold;
+                cursor: pointer;
+                margin: 10px;
+            ">COPY CODE</button>
+            <button onclick="multiplayerManager.hideRoomCode()" style="
+                background: #ff6b6b;
+                color: #fff;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                font-weight: bold;
+                cursor: pointer;
+                margin: 10px;
+            ">CLOSE</button>
+        `;
+    }
+    
+    hideRoomCode() {
+        const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+        if (roomCodeDisplay) {
+            roomCodeDisplay.remove();
         }
     }
 
