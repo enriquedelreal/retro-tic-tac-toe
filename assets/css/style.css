@@ -391,14 +391,14 @@ body::before {
 }
 
 .cell.x {
-    color: #ff6b6b;
-    text-shadow: 2px 2px 0 #8b0000;
+    color: #ff6b6b !important;
+    text-shadow: 2px 2px 0 #8b0000 !important;
     animation: placeSymbol 0.3s ease-out;
 }
 
 .cell.o {
-    color: #4ecdc4;
-    text-shadow: 2px 2px 0 #006400;
+    color: #4ecdc4 !important;
+    text-shadow: 2px 2px 0 #006400 !important;
     animation: placeSymbol 0.3s ease-out;
 }
 
@@ -410,11 +410,24 @@ body::before {
 
 .cell.winning {
     background: #ffd700 !important;
-    color: #8b4513 !important;
     border-color: #ffd700 !important;
     animation: winner 0.6s ease-in-out infinite alternate;
     z-index: 10;
     position: relative;
+}
+
+.cell.winning.x {
+    color: #ff6b6b !important;
+    text-shadow: 2px 2px 0 #8b0000 !important;
+}
+
+.cell.winning.o {
+    color: #4ecdc4 !important;
+    text-shadow: 2px 2px 0 #006400 !important;
+}
+
+.cell.winning:not(.x):not(.o) {
+    color: #8b4513 !important;
 }
 
 .cell.last-move {
