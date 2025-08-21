@@ -231,7 +231,9 @@ class MultiplayerManager {
         
         // Notify the main game about mode change
         if (window.retroArcade && window.retroArcade.games.tictactoe) {
-            window.retroArcade.games.tictactoe.setGameMode(this.gameMode);
+            const game = window.retroArcade.games.tictactoe;
+            game.setGameMode(this.gameMode);
+            console.log('🎮 Game mode set to:', this.gameMode);
         }
     }
 
@@ -328,6 +330,7 @@ class MultiplayerManager {
         console.log('🎮 socket exists:', !!this.socket);
         console.log('🎮 isConnected:', this.isConnected);
         console.log('🎮 roomId:', this.roomId);
+        console.log('🎮 playerSymbol:', this.playerSymbol);
         
         if (this.socket && this.isConnected && this.roomId) {
             console.log('🎮 Emitting makeMove event to server');
@@ -335,8 +338,12 @@ class MultiplayerManager {
                 roomId: this.roomId,
                 position: position
             });
+            
+            // Show feedback that move was sent
+            this.updateStatus('Move sent to server...');
         } else {
             console.log('🎮 Cannot make move - not connected or no room');
+            this.updateStatus('Cannot make move - not connected to server');
         }
     }
 
@@ -347,10 +354,28 @@ class MultiplayerManager {
     }
 
     handleGameStateUpdate(gameState) {
+        console.log('🎮 Handling game state update:', gameState);
+        
         // Update the game board with the new state
         if (window.retroArcade && window.retroArcade.games.tictactoe) {
             const game = window.retroArcade.games.tictactoe;
             game.updateFromServer(gameState);
+        }
+        
+        // Update turn indicator
+        this.updateTurnIndicator(gameState.currentPlayer);
+    }
+    
+    updateTurnIndicator(currentPlayer) {
+        const statusElement = document.getElementById('gameStatus');
+        if (statusElement) {
+            if (currentPlayer === this.playerSymbol) {
+                statusElement.textContent = "It's your turn!";
+                statusElement.style.color = '#4aff4a';
+            } else {
+                statusElement.textContent = "Waiting for opponent...";
+                statusElement.style.color = '#ff6b6b';
+            }
         }
     }
 
@@ -587,6 +612,12 @@ class MultiplayerManager {
         if (this.gameMode !== 'multiplayer' || !this.roomId) {
             console.log('🎮 Not multiplayer or no room - allowing move');
             return true;
+        }
+        
+        // Check if we have a valid player symbol
+        if (!this.playerSymbol) {
+            console.log('🎮 No player symbol - denying move');
+            return false;
         }
         
         // This will be updated by the game state from server
