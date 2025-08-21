@@ -739,15 +739,41 @@ class RetroTicTacToe {
         this.currentPlayer = gameState.currentPlayer;
         this.gameActive = gameState.gameActive;
         this.scores = { ...gameState.scores };
+        this.moveCount = gameState.board.filter(cell => cell !== '').length;
         
         console.log('🎮 Updated local state:');
         console.log('🎮 board:', this.board);
         console.log('🎮 currentPlayer:', this.currentPlayer);
         console.log('🎮 gameActive:', this.gameActive);
         console.log('🎮 gameMode:', this.gameMode);
+        console.log('🎮 moveCount:', this.moveCount);
         
-        // Update display
-        this.updateDisplay();
+        // Force update all cells to match server state
+        this.board.forEach((cellValue, index) => {
+            const cell = document.querySelector(`[data-index="${index}"]`);
+            if (cell) {
+                cell.textContent = cellValue;
+                if (cellValue === 'X') {
+                    cell.className = 'cell x';
+                } else if (cellValue === 'O') {
+                    cell.className = 'cell o';
+                } else {
+                    cell.className = 'cell';
+                }
+            }
+        });
+        
+        // Update current player display
+        const currentPlayerElement = document.getElementById('currentPlayer');
+        if (currentPlayerElement) {
+            currentPlayerElement.textContent = this.currentPlayer;
+        }
+        
+        // Update scores
+        this.updateScores();
+        
+        // Update move counter
+        this.updateMoveCounter();
         
         // Update status based on game state
         if (!this.gameActive) {
@@ -774,8 +800,25 @@ class RetroTicTacToe {
                     return;
                 }
                 
+                // Update local display immediately (like local mode)
+                this.board[index] = this.currentPlayer;
+                this.moveCount++;
+                
+                // Record move in history
+                this.gameHistory.push({
+                    player: this.currentPlayer,
+                    position: index,
+                    moveNumber: this.moveCount
+                });
+                
+                this.updateCell(index);
+                this.playMoveSound();
+                
                 // Send move to server
                 multiplayerManager.makeMove(index);
+                
+                // Switch player locally
+                this.switchPlayer();
                 return;
             }
 
